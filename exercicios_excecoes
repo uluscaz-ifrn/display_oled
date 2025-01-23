@@ -1,0 +1,150 @@
+# Exercício 1: Criando uma Classe com Exceções Personalizadas
+class SaldoInsuficienteError(Exception):
+    pass
+
+class ContaBancaria:
+    def __init__(self, titular, saldo):
+        self.titular = titular
+        self.saldo = saldo
+
+    def depositar(self, valor):
+        self.saldo += valor
+
+    def sacar(self, valor):
+        if valor > self.saldo:
+            raise SaldoInsuficienteError("Saldo insuficiente para saque.")
+        self.saldo -= valor
+
+# Teste
+try:
+    conta = ContaBancaria("João", 500)
+    conta.sacar(600)
+except SaldoInsuficienteError as e:
+    print(e)
+
+# Exercício 2: Validação de Dados em uma Classe
+class ValorInvalidoError(Exception):
+    pass
+
+class Produto:
+    def __init__(self, nome, preco, estoque):
+        if preco <= 0 or estoque < 0:
+            raise ValorInvalidoError("Preço deve ser positivo e estoque não pode ser negativo.")
+        self.nome = nome
+        self.preco = preco
+        self.estoque = estoque
+
+# Teste
+try:
+    produto = Produto("Produto A", -10, 5)
+except ValorInvalidoError as e:
+    print(e)
+
+# Exercício 3: Herança e Tratamento de Exceções
+class PorcentagemInvalidaError(Exception):
+    pass
+
+class Funcionario:
+    def __init__(self, nome, salario):
+        self.nome = nome
+        self.salario = salario
+
+    def aumentar_salario(self, porcentagem):
+        if porcentagem < 0:
+            raise PorcentagemInvalidaError("A porcentagem não pode ser negativa.")
+        self.salario += self.salario * (porcentagem / 100)
+
+class Gerente(Funcionario):
+    def __init__(self, nome, salario, departamento):
+        super().__init__(nome, salario)
+        self.departamento = departamento
+
+# Teste
+try:
+    gerente = Gerente("Ana", 5000, "TI")
+    gerente.aumentar_salario(-10)
+except PorcentagemInvalidaError as e:
+    print(e)
+
+# Exercício 4: Manipulação de Arquivos com Exceções
+class ArquivoTexto:
+    def __init__(self, nome_arquivo):
+        self.nome_arquivo = nome_arquivo
+
+    def ler_conteudo(self):
+        try:
+            with open(self.nome_arquivo, 'r') as arquivo:
+                return arquivo.read()
+        except FileNotFoundError:
+            print("Arquivo não encontrado.")
+        except PermissionError:
+            print("Sem permissão para ler o arquivo.")
+
+    def gravar_conteudo(self, conteudo):
+        try:
+            with open(self.nome_arquivo, 'a') as arquivo:
+                arquivo.write(conteudo)
+        except PermissionError:
+            print("Sem permissão para escrever no arquivo.")
+
+# Exercício 5: Sistema de Cadastro com Múltiplas Exceções
+class NomeInvalidoError(Exception):
+    pass
+
+class IdadeInvalidaError(Exception):
+    pass
+
+class EmailInvalidoError(Exception):
+    pass
+
+class Usuario:
+    def __init__(self, nome, idade, email):
+        if len(nome) < 3:
+            raise NomeInvalidoError("O nome deve ter pelo menos 3 caracteres.")
+        if idade <= 18:
+            raise IdadeInvalidaError("O usuário deve ter mais de 18 anos.")
+        if "@" not in email:
+            raise EmailInvalidoError("O email deve conter '@'.")
+        self.nome = nome
+        self.idade = idade
+        self.email = email
+
+# Teste
+try:
+    usuario = Usuario("Jo", 17, "email")
+except (NomeInvalidoError, IdadeInvalidaError, EmailInvalidoError) as e:
+    print(e)
+
+# Exercício 6: Utilização de finally para Limpeza de Recursos
+try:
+    with open("auditoria_autenticacao.txt", 'a') as arquivo:
+        usuario = input("Usuário: ")
+        senha = input("Senha: ")
+        arquivo.write(f"Usuário: {usuario}, Data/Hora: {datetime.datetime.now()}\n")
+except Exception as e:
+    print(f"Erro ao manipular arquivo: {e}")
+finally:
+    print("Processo concluído.")
+
+# Exercício 7: Exceções Múltiplas e Generalizadas
+def calcular_media(lista):
+    try:
+        if not lista:
+            raise ZeroDivisionError("A lista está vazia.")
+        return sum(lista) / len(lista)
+    except TypeError:
+        print("A lista contém elementos não numéricos.")
+    except Exception as e:
+        print(f"Erro não previsto: {e}")
+
+# Exercício 8: Utilizando else no Tratamento de Exceções
+try:
+    num1 = int(input("Digite o número: "))
+    num2 = int(input("Digite o divisor: "))
+    resultado = num1 / num2
+except ValueError:
+    print("Você deve digitar números inteiros.")
+except ZeroDivisionError:
+    print("O divisor não pode ser zero.")
+else:
+    print(f"Resultado: {resultado}")
